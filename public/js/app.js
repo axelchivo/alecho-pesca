@@ -33,7 +33,7 @@ let productsFilters = {};
 
 async function loadCurrentUser() {
   try {
-    const res = await fetch(api.me);
+    const res = await fetch(api.me, { credentials: 'include' });
     if (!res.ok) return;
     const data = await res.json();
     currentUser = data.user || null;
@@ -408,7 +408,7 @@ async function handleLogin(e) {
 
 async function handleLogout() {
   try {
-    await fetch(api.logout, { method: 'POST' });
+    await fetch(api.logout, { method: 'POST', credentials: 'include' });
   } catch (err) {
     // Ignorar errores de logout
   }
