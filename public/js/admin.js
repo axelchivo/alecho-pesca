@@ -427,20 +427,42 @@ async function deleteUser(userId) {
 }
 
 async function ensureAdmin() {
-  const res = await fetch('https://alecho-pesca.onrender.com/api/auth/me');
-  const data = await res.json();
-  if (!data.user || !data.user.isAdmin) {
+  // Primero verificar localStorage (más rápido y confiable)
+  const isAdminFromStorage = localStorage.getItem('isAdmin') === 'true';
+
+  if (isAdminFromStorage) {
+    // Mostrar el contenido administrativo
+    document.getElementById('admin-alert').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    return true;
+  }
+
+  // Si no está en localStorage, verificar con el servidor
+  try {
+    const res = await fetch('https://alecho-pesca.onrender.com/api/auth/me');
+    const data = await res.json();
+    if (!data.user || !data.user.isAdmin) {
+      document.getElementById('admin-content').style.display = 'none';
+      const alert = document.getElementById('admin-alert');
+      alert.style.display = 'block';
+      alert.textContent = 'Acceso denegado. Debes iniciar sesión como administrador.';
+      return false;
+    }
+
+    // Actualizar localStorage con la info del servidor
+    localStorage.setItem('isAdmin', data.user.isAdmin ? 'true' : 'false');
+
+    // Mostrar el contenido administrativo
+    document.getElementById('admin-alert').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    return true;
+  } catch (error) {
     document.getElementById('admin-content').style.display = 'none';
     const alert = document.getElementById('admin-alert');
     alert.style.display = 'block';
-    alert.textContent = 'Acceso denegado. Debes iniciar sesión como administrador.';
+    alert.textContent = 'Error al verificar permisos de administrador.';
     return false;
   }
-
-  // Mostrar el contenido administrativo
-  document.getElementById('admin-alert').style.display = 'none';
-  document.getElementById('admin-content').style.display = 'block';
-  return true;
 }
 
 async function initAdmin() {
