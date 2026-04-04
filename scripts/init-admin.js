@@ -1,6 +1,9 @@
 // scripts/init-admin.js
 // Script para inicializar usuario administrador
 
+const mongoose = require('mongoose');
+require('dotenv').config();
+
 const userModel = require('../models/userModel');
 
 async function createAdminUser() {
@@ -8,10 +11,24 @@ async function createAdminUser() {
   const adminPassword = 'admin123';
 
   try {
+    // Conectar a MongoDB si se usa
+    const dbType = (process.env.DB_TYPE || 'json').toLowerCase();
+    const isMongo = dbType === 'mongo' || dbType === 'mongodb';
+
+    if (isMongo) {
+      const mongoUrl = process.env.MONGO_URL;
+      if (!mongoUrl) {
+        throw new Error('❌ MONGO_URL no está configurada en .env');
+      }
+      console.log('Conectando a MongoDB...');
+      await mongoose.connect(mongoUrl);
+      console.log('✅ Conectado a MongoDB');
+    }
+
     // Verificar si ya existe
     const existingUser = await userModel.findByEmail(adminEmail);
     if (existingUser) {
-      console.log('Usuario administrador ya existe:', existingUser);
+      console.log('✅ Usuario administrador ya existe:', existingUser);
       return;
     }
 
@@ -24,9 +41,9 @@ async function createAdminUser() {
       isAdmin: true,
     });
 
-    console.log('Usuario administrador creado exitosamente:', adminUser);
+    console.log('✅ Usuario administrador creado exitosamente:', adminUser);
   } catch (error) {
-    console.error('Error al crear usuario administrador:', error);
+    console.error('❌ Error al crear usuario administrador:', error.message);
     throw error;
   }
 }
@@ -34,11 +51,12 @@ async function createAdminUser() {
 if (require.main === module) {
   createAdminUser()
     .then(() => {
-      console.log('Script completado exitosamente');
+      console.log('✅ Script completado exitosamente');
+      process.exit(0);
     })
     .catch((error) => {
-      console.error('Error en el script:', error);
-      throw error;
+      console.error('❌ Error en el script:', error.message);
+      process.exit(1);
     });
 }
 

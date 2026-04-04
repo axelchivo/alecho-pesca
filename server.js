@@ -17,7 +17,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URL = process.env.MONGO_URL;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default_secret';
-const DB_TYPE = process.env.DB_TYPE || 'json';
+const DB_TYPE = (process.env.DB_TYPE || 'json').toLowerCase();
+const USE_MONGO = DB_TYPE === 'mongo' || DB_TYPE === 'mongodb';
 const ENV = process.env.NODE_ENV || 'development';
 const DATA_DIR = path.join(__dirname, 'data');
 
@@ -27,7 +28,7 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 // ======================
 // Conexión a MongoDB
 // ======================
-if (DB_TYPE === 'mongo') {
+if (USE_MONGO) {
   if (!MONGO_URL) throw new Error('❌ MONGO_URL no definida en variables de entorno');
 
   mongoose
@@ -56,7 +57,7 @@ let sessionConfig = {
   },
 };
 
-if (DB_TYPE === 'mongo') {
+if (USE_MONGO) {
   sessionConfig.store = MongoStore.create({
     mongoUrl: MONGO_URL,
     ttl: 24 * 60 * 60,
