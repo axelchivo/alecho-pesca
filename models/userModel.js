@@ -1,19 +1,15 @@
 ﻿// models/userModel.js
-// Usuarios persistidos en data/db.json o PostgreSQL según configuración
+// Usuarios persistidos en MongoDB o JSON según configuración
 
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const config = require('../config');
 
-const isPostgres = config.dbType === 'postgresql';
 const isMongo = config.dbType === 'mongo' || config.dbType === 'mongodb';
 
 let UserModel;
 
-if (isPostgres) {
-  const { User } = require('./sql');
-  UserModel = User;
-} else if (isMongo) {
+if (isMongo) {
   const userSchema = new mongoose.Schema(
     {
       name: { type: String, trim: true, required: true },
@@ -41,22 +37,22 @@ if (isPostgres) {
   // Mantener compatibilidad con JSON
   const { readDb, writeDb } = require('./db');
 
-  function getUsers() {
+  const getUsers = () => {
     const db = readDb();
     db.users = db.users || [];
     return db.users;
-  }
+  };
 
-  function saveUsers(users) {
+  const saveUsers = (users) => {
     const db = readDb();
     db.users = users;
     writeDb(db);
-  }
+  };
 
-  function nextId(users) {
+  const nextId = (users) => {
     if (!users.length) return 1;
     return Math.max(...users.map((u) => u.id)) + 1;
-  }
+  };
 
   UserModel = {
     getUsers,
@@ -84,16 +80,6 @@ function verifyPassword(user, plain) {
 
 const userModel = {
   create: async ({ name, email, password, type = 'minorista', isAdmin = false, location = '' }) => {
-    if (isPostgres) {
-      const role = isAdmin ? 'admin' : 'user';
-      const user = await UserModel.create({
-        email,
-        password: hashPassword(password),
-        role,
-      });
-      return user.toJSON();
-    }
-
     if (isMongo) {
       const user = await UserModel.create({
         name,
@@ -104,76 +90,149 @@ const userModel = {
         location,
       });
       return user.toJSON();
+    } else {
+      const users = UserModel.getUsers();
+      const user = {
+        id: UserModel.nextId(users),
+        name,
+        email,
+        password: hashPassword(password),
+        type,
+        isAdmin,
+        location,
+        createdAt: new Date().toISOString(),
+      };
+      users.push(user);
+      UserModel.saveUsers(users);
+      return user;
     }
-
-    const users = UserModel.getUsers();
-    const user = {
-      id: UserModel.nextId(users),
-      name,
-      email,
-      password: hashPassword(password),
-      type,
-      isAdmin,
-      location,
-      createdAt: new Date().toISOString(),
-    };
-    users.push(user);
-    UserModel.saveUsers(users);
-    return user;
   },
 
   findByEmail: async (email) => {
-    if (isPostgres) {
-      const user = await UserModel.findOne({ where: { email } });
-      return user ? user.toJSON() : null;
-    }
-
     if (isMongo) {
       return UserModel.findOne({ email }).lean();
+    } else {
+      const users = UserModel.getUsers();
+      return users.find((u) => u.email === email);
     }
-
-    const users = UserModel.getUsers();
-    return users.find((u) => u.email === email);
   },
 
   findById: async (id) => {
-    if (isPostgres) {
-      const user = await UserModel.findByPk(id);
-      return user ? user.toJSON() : null;
-    }
-
     if (isMongo) {
       return UserModel.findById(id).lean();
+    } else {
+      const users = UserModel.getUsers();
+      return users.find((u) => u.id === parseInt(id));
     }
-
-    const users = UserModel.getUsers();
-    return users.find((u) => u.id === parseInt(id));
   },
 
   update: async (id, updates) => {
-    if (isPostgres) {
-      const [affectedRows] = await UserModel.update(
-        updates.password ? { ...updates, password: hashPassword(updates.password) } : updates,
-        { where: { id } }
-      );
-      if (affectedRows === 0) return null;
-      const user = await UserModel.findByPk(id);
-      return user ? user.toJSON() : null;
-    }
-
     if (isMongo) {
       if (updates.password) updates.password = hashPassword(updates.password);
-      const user = await UserModel.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).lean();
+      const user = await UserModel.findByIdAndUpdate(id, updates, { new: true }).lean();
+      return user;
+    } else {
+      const users = UserModel.getUsers();
+      const user = users.find((u) => u.id === parseInt(id));
+      if (!user) return null;
+      if (updates.password) updates.password = hashPassword(updates.password);
+      Object.assign(user, updates);
+      UserModel.saveUsers(users);
       return user;
     }
+  },
 
-    const users = UserModel.getUsers();
-    const user = users.find((u) => u.id === parseInt(id));
-    if (!user) return null;
-    if (updates.password) updates.password = hashPassword(updates.password);
-    Object.assign(user, updates);
-    UserModel.saveUsers(users);
-    return user;
+  verifyPassword,
+};
+
+module.exports = userModel;
+
+  UserModel = {
+    getUsers,
+    saveUsers,
+    nextId,
+  };
+}
+
+function hashPassword(password) {
+  if (!password) return '';
+  // Si ya está hasheada (bcrypt), devolverla tal cual
+  if (typeof password === 'string' && password.startsWith('$2')) return password;
+  return bcrypt.hashSync(password, 10);
+}
+
+function verifyPassword(user, plain) {
+  if (!user || !plain) return false;
+  // Si no es bcrypt, asumimos texto plano y comparamos directamente (para migración)
+  const stored = user.password || '';
+  if (stored.startsWith('$2')) {
+    return bcrypt.compareSync(plain, stored);
+  }
+  return stored === plain;
+}
+
+const userModel = {
+  create: async ({ name, email, password, type = 'minorista', isAdmin = false, location = '' }) => {
+    if (isMongo) {
+      const user = await UserModel.create({
+        name,
+        email,
+        password: hashPassword(password),
+        type,
+        isAdmin,
+        location,
+      });
+      return user.toJSON();
+    } else {
+      const users = UserModel.getUsers();
+      const user = {
+        id: UserModel.nextId(users),
+        name,
+        email,
+        password: hashPassword(password),
+        type,
+        isAdmin,
+        location,
+        createdAt: new Date().toISOString(),
+      };
+      users.push(user);
+      UserModel.saveUsers(users);
+      return user;
+    }
+  },
+
+  findByEmail: async (email) => {
+    if (isMongo) {
+      return UserModel.findOne({ email }).lean();
+    } else {
+      const users = UserModel.getUsers();
+      return users.find((u) => u.email === email);
+    }
+  },
+
+  findById: async (id) => {
+    if (isMongo) {
+      return UserModel.findById(id).lean();
+    } else {
+      const users = UserModel.getUsers();
+      return users.find((u) => u.id === parseInt(id));
+    }
+  },
+
+  update: async (id, updates) => {
+    if (isMongo) {
+      if (updates.password) updates.password = hashPassword(updates.password);
+      const user = await UserModel.findByIdAndUpdate(id, updates, { new: true }).lean();
+      return user;
+    } else {
+      const users = UserModel.getUsers();
+      const user = users.find((u) => u.id === parseInt(id));
+      if (!user) return null;
+      if (updates.password) updates.password = hashPassword(updates.password);
+      Object.assign(user, updates);
+      UserModel.saveUsers(users);
+      return user;
+    }
   },
 
   verifyPassword,

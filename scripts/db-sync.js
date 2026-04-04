@@ -1,16 +1,19 @@
 // scripts/db-sync.js
-// Script para sincronizar la base de datos
+// Script para sincronizar la base de datos (solo para PostgreSQL, no usado actualmente)
 
-const { syncDatabase } = require('../models/sql');
+const config = require('../config');
 
 async function main() {
-  try {
-    await syncDatabase();
-    console.log('Base de datos sincronizada exitosamente');
-  } catch (error) {
-    console.error('Error al sincronizar la base de datos:', error.message);
-    process.exit(1);
+  if (config.dbType === 'postgresql') {
+    // Aquí iría el código de sincronización de PostgreSQL si se implementara
+    console.log('PostgreSQL no está implementado aún');
+    throw new Error('PostgreSQL synchronization not implemented');
+  } else {
+    console.log('Sincronización no necesaria para el tipo de base de datos actual');
   }
 }
 
-main();
+main().catch((error) => {
+  console.error('Error:', error.message);
+  throw error;
+});
