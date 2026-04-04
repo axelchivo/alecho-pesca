@@ -1,6 +1,6 @@
 # Alecho Pesca
 
-Proyecto de ejemplo: tienda de artículos de pesca "Alecho Pesca" con frontend moderno y backend en Node.js + Express.
+Proyecto de ejemplo: tienda de artículos de pesca
 
 ## Estructura
 
