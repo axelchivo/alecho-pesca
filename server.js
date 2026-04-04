@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const session = require('express-session');
 const MongoStoreModule = require('connect-mongo');
@@ -8,26 +7,36 @@ const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
-const config = require('./config');
+require('dotenv').config(); // asegurarse de leer .env si está presente
 
 const app = express();
-const PORT = config.port;
-
-// Asegurarse que exista el directorio de datos
-if (!fs.existsSync(config.dataDir)) fs.mkdirSync(config.dataDir, { recursive: true });
 
 // ======================
-// Conexión a MongoDB Atlas
+// Configuración
 // ======================
-mongoose.connect(config.mongoUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB conectado correctamente'))
-.catch((err) => {
-  // En vez de process.exit(), lanzamos el error
-  throw new Error('❌ Error conectando a MongoDB: ' + err.message);
-});
+const PORT = process.env.PORT || 3000;
+const MONGO_URL = process.env.MONGO_URL;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'default_secret';
+const DB_TYPE = process.env.DB_TYPE || 'json';
+const ENV = process.env.NODE_ENV || 'development';
+const DATA_DIR = path.join(__dirname, 'data');
+
+// Asegurar directorio de datos
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+// ======================
+// Conexión a MongoDB
+// ======================
+if (DB_TYPE === 'mongo') {
+  if (!MONGO_URL) throw new Error('❌ MONGO_URL no definida en variables de entorno');
+
+  mongoose
+    .connect(MONGO_URL)
+    .then(() => console.log('✅ MongoDB Atlas conectado correctamente'))
+    .catch((err) => {
+      throw new Error('❌ Error conectando a MongoDB: ' + err.message);
+    });
+}
 
 // ======================
 // Middlewares
@@ -36,27 +45,27 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 let sessionConfig = {
-  secret: config.sessionSecret,
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
     sameSite: 'lax',
-    secure: config.env === 'production',
+    secure: ENV === 'production',
   },
 };
 
-if (config.dbType === 'json') {
-  console.log('Usando sesiones en memoria (JSON storage)');
-} else {
+if (DB_TYPE === 'mongo') {
   sessionConfig.store = MongoStore.create({
-    mongoUrl: config.mongoUrl,
+    mongoUrl: MONGO_URL,
     ttl: 24 * 60 * 60,
     autoRemove: 'native',
     collectionName: 'sessions',
   });
   console.log('Usando MongoDB para sesiones');
+} else {
+  console.log('Usando sesiones en memoria (JSON storage)');
 }
 
 app.use(session(sessionConfig));
@@ -67,7 +76,7 @@ app.use(session(sessionConfig));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ======================
-// Rutas de la API
+// Rutas
 // ======================
 const productsRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
