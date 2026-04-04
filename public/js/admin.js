@@ -281,7 +281,7 @@ function renderProductRow(product) {
 }
 
 async function refreshProducts() {
-  const res = await fetch('https://alecho-pesca.onrender.com/api/admin/products');
+  const res = await fetch('https://alecho-pesca.onrender.com/api/admin/products', { credentials: 'include' });
   const products = await res.json();
   adminProducts = products;
 
@@ -312,7 +312,7 @@ async function refreshProducts() {
 }
 
 async function refreshUsers() {
-  const res = await fetch('https://alecho-pesca.onrender.com/api/admin/users');
+  const res = await fetch('https://alecho-pesca.onrender.com/api/admin/users', { credentials: 'include' });
   const users = await res.json();
   const tbody = document.getElementById('admin-users');
   tbody.innerHTML = '';
@@ -359,7 +359,7 @@ function renderReviewRow(review) {
 }
 
 async function refreshReviews() {
-  const res = await fetch('https://alecho-pesca.onrender.com/api/admin/reviews');
+  const res = await fetch('https://alecho-pesca.onrender.com/api/admin/reviews', { credentials: 'include' });
   const reviews = await res.json();
   const tbody = document.getElementById('admin-reviews');
   tbody.innerHTML = reviews.map(renderReviewRow).join('');
@@ -368,7 +368,7 @@ async function refreshReviews() {
 async function deleteReview(reviewId) {
   if (!confirm('¿Eliminar esta reseña?')) return;
   if (!confirm('¿Estás seguro? La reseña se eliminará permanentemente.')) return;
-  const res = await fetch(`https://alecho-pesca.onrender.com/api/admin/reviews/${reviewId}`, { method: 'DELETE' });
+  const res = await fetch(`https://alecho-pesca.onrender.com/api/admin/reviews/${reviewId}`, { method: 'DELETE', credentials: 'include' });
   if (res.ok) {
     showMessage('Reseña eliminada');
     await refreshReviews();
@@ -386,6 +386,7 @@ async function updateUserType(userId) {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ type }),
+    credentials: 'include'
   });
   if (res.ok) {
     showMessage('Tipo de usuario actualizado');
@@ -402,6 +403,7 @@ async function resetUserPassword(userId) {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ password: 'admin123' }),
+    credentials: 'include'
   });
   if (res.ok) {
     showMessage('Contraseña restablecida a admin123');
@@ -416,6 +418,7 @@ async function deleteUser(userId) {
   if (!confirm('¿Estás seguro? Esta acción eliminará al usuario permanentemente.')) return;
   const res = await fetch(`https://alecho-pesca.onrender.com/api/admin/users/${userId}`, {
     method: 'DELETE',
+    credentials: 'include'
   });
   if (res.ok) {
     showMessage('Usuario eliminado');
@@ -512,6 +515,7 @@ async function initAdmin() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      credentials: 'include'
     });
     await loadPaymentSettings();
     showMessage('Configuración de pagos actualizada');
@@ -620,6 +624,7 @@ async function initAdmin() {
       method: isEditing ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      credentials: 'include'
     });
     if (!res.ok) {
       const err = await res.json();
@@ -638,7 +643,7 @@ async function initAdmin() {
 }
 
 async function editProduct(id) {
-  const res = await fetch(`https://alecho-pesca.onrender.com/api/admin/products/${id}`);
+  const res = await fetch(`https://alecho-pesca.onrender.com/api/admin/products/${id}`, { credentials: 'include' });
   if (!res.ok) return showMessage('Producto no encontrado', 'danger');
   const product = await res.json();
   const form = document.getElementById('product-form');
@@ -662,7 +667,7 @@ async function editProduct(id) {
 
 async function deleteProduct(id) {
   if (!confirm('¿Eliminar este producto?')) return;
-  await fetch(`https://alecho-pesca.onrender.com/api/admin/products/${id}`, { method: 'DELETE' });
+  await fetch(`https://alecho-pesca.onrender.com/api/admin/products/${id}`, { method: 'DELETE', credentials: 'include' });
   showMessage('Producto eliminado');
   await refreshProducts();
 }
