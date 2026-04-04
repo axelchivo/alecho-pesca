@@ -52,11 +52,10 @@ if (require.main === module) {
   createAdminUser()
     .then(() => {
       console.log('✅ Script completado exitosamente');
-      process.exit(0);
     })
     .catch((error) => {
       console.error('❌ Error en el script:', error.message);
-      process.exit(1);
+      throw error;
     });
 }
 
