@@ -1,0 +1,46 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": ["eslint:recommended", "plugin:node/recommended", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 2021
+  },
+  "overrides": [
+    {
+      "files": ["public/**/*.js"],
+      "env": {
+        "browser": true
+      },
+      "globals": {
+        "showMessage": "readonly",
+        "loadPaymentSettings": "readonly",
+        "paymentSettings": "readonly",
+        "loadCurrentUser": "readonly"
+      },
+      "rules": {
+        "node/no-unsupported-features/node-builtins": "off"
+      }
+    },
+    {
+      "files": ["tests/**/*.js"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "node/no-unpublished-require": "off"
+      }
+    }
+  ],
+  "rules": {
+    "no-console": "off",
+    "node/no-unsupported-features/es-syntax": "off",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ]
+  }
+}

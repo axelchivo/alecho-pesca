@@ -1,0 +1,91 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Administrador",
+      "email": "admin@alechopesca.com",
+      "password": "$2b$10$jVL/w98xd0C5YHieNR3L4.qsHBFtvjiXGXdAdqGZzXnzAzPQnjdk2",
+      "type": "admin",
+      "isAdmin": true,
+      "location": "",
+      "createdAt": "2026-03-13T05:38:55.362Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "userId": 1,
+      "userType": "mayorista",
+      "items": [
+        {
+          "productId": 2,
+          "name": "Caña de pescar telescópica 1.80m",
+          "price": 149.99,
+          "quantity": 1,
+          "subtotal": 149.99
+        },
+        {
+          "productId": 3,
+          "name": "Reel spinning frontal",
+          "price": 89.99,
+          "quantity": 1,
+          "subtotal": 89.99
+        }
+      ],
+      "total": 239.98000000000002,
+      "discount": 23.998000000000005,
+      "surcharge": 0,
+      "surchargeRate": 0,
+      "finalTotal": 215.98200000000003,
+      "paymentMethod": "debito",
+      "paymentDetails": null,
+      "createdAt": "2026-03-09T22:22:21.422Z"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "userType": "admin",
+      "items": [
+        {
+          "productId": 1,
+          "name": "caña waterdog",
+          "price": 25000,
+          "quantity": 1,
+          "subtotal": 25000
+        }
+      ],
+      "total": 25000,
+      "discount": 0,
+      "surcharge": 500,
+      "surchargeRate": 0.02,
+      "finalTotal": 25500,
+      "paymentMethod": "debito",
+      "paymentDetails": null,
+      "createdAt": "2026-03-13T05:44:19.400Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "caña waterdog",
+      "price": 25000,
+      "wholesalePrice": null,
+      "category": "caña",
+      "rating": 5,
+      "image": "",
+      "images": [],
+      "videos": [],
+      "stock": 49,
+      "description": "caña waterdog de 2,10mts de fibra de vidrio compuesto",
+      "createdAt": "2026-03-13T05:42:07.585Z"
+    }
+  ],
+  "paymentSettings": {
+    "creditSurcharge": 0.1,
+    "debitSurcharge": 0.02,
+    "mercadoPagoFee": 0.03,
+    "transferFee": 0,
+    "cashFee": 0
+  },
+  "reviews": []
+}

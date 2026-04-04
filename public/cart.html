@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito - Alecho Pesca</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">
+        <img src="images/logo.png" alt="Alecho Pesca" height="40" class="me-2">
+        ALECHO PESCA
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-fish"></i> Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html"><i class="fas fa-envelope"></i> Contacto</a></li>
+          <li class="nav-item"><a class="nav-link" href="orders.html"><i class="fas fa-clipboard-list"></i> Mis pedidos</a></li>
+          <li class="nav-item"><a class="nav-link" href="account.html"><i class="fas fa-user"></i> Cuenta</a></li>
+          <li class="nav-item ms-3"><a class="btn btn-warning btn-sm active" href="cart.html"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h2 class="mb-4"><i class="fas fa-shopping-cart"></i> Mi Carrito</h2>
+    
+    <div class="row">
+      <!-- Tabla del carrito -->
+      <div class="col-lg-8">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cart-items"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm sticky-top" style="top: 80px;">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-calculator"></i> Resumen</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Forma de pago</label>
+              <select id="payment-method" class="form-select">
+                <option value="efectivo">Efectivo (retiro en tienda)</option>
+                <option value="debito">Tarjeta débito</option>
+                <option value="credito">Tarjeta crédito</option>
+                <option value="transferencia">Transferencia bancaria</option>
+                <option value="mercado_pago">Mercado Pago</option>
+              </select>
+            </div>
+            <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+              <span>Total a pagar:</span>
+              <strong class="text-primary">$<span id="cart-total">0.00</span></strong>
+            </div>
+            <button class="btn btn-primary w-100 btn-lg mb-3" onclick="checkout()">
+              <i class="fas fa-credit-card"></i> Proceder al Pago
+            </button>
+            <a href="products.html" class="btn btn-outline-secondary w-100">
+              <i class="fas fa-arrow-left"></i> Seguir Comprando
+            </a>
+            <small class="d-block text-muted text-center mt-3">*Envío gratis en compras mayores a $500</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carrito vacío -->
+    <div id="empty-cart" class="alert alert-info text-center py-5" style="display:none;">
+      <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+      <h4>Tu carrito está vacío</h4>
+      <p class="text-muted">Comienza a añadir productos para completar tu compra</p>
+      <a href="products.html" class="btn btn-primary">Ver Productos</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-light py-5">
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">
+            <img src="images/logo.png" alt="Alecho Pesca" height="30" class="me-2">
+            ALECHO PESCA
+          </h6>
+          <p class="small">Tu tienda de confianza para artículos de pesca de calidad.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">Contacto</h6>
+          <p class="small">
+            <i class="fas fa-phone"></i> +54 11 3000-0000<br>
+            <i class="fas fa-envelope"></i> info@alechopesca.com<br>
+            <i class="fas fa-map-marker-alt"></i> CABA, Argentina
+          </p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">Síguenos</h6>
+          <div>
+            <a href="https://www.instagram.com/alechopesca/" target="_blank" class="text-light me-3"><i class="fab fa-instagram fa-lg"></i></a>
+            <a href="https://www.facebook.com/alechopesca/" target="_blank" class="text-light me-3"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="https://wa.me/5491163749402" target="_blank" class="text-light me-3"><i class="fab fa-whatsapp fa-lg"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="bg-light">
+      <div class="text-center small">
+        <p class="mb-0">© 2026 Alecho Pesca - Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadCurrentUser();
+      await loadPaymentSettings();
+      renderCart();
+      const pmSelect = document.getElementById('payment-method');
+      if (pmSelect) pmSelect.addEventListener('change', renderCart);
+    });
+  </script>
+  <a href="https://wa.me/5491163749402" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+    </a>
+</body>
+</html>

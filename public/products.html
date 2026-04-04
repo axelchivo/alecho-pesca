@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productos - Alecho Pesca</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">
+        <img src="images/logo.png" alt="Alecho Pesca" height="40" class="me-2">
+        ALECHO PESCA
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="products.html"><i class="fas fa-fish"></i> Productos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html"><i class="fas fa-envelope"></i> Contacto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="orders.html"><i class="fas fa-clipboard-list"></i> Mis pedidos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="account.html"><i class="fas fa-user"></i> Cuenta</a>
+          </li>
+          <li class="nav-item ms-3">
+            <a class="btn btn-warning btn-sm" href="cart.html"><i class="fas fa-shopping-cart"></i> Carrito</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Buscador -->
+  <div class="bg-light py-3 border-bottom">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <input id="search-input" class="form-control form-control-lg" type="search"
+            placeholder="🔍 Buscar productos..." aria-label="Buscar" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container my-5">
+    <div class="row">
+      <!-- Sidebar con filtros -->
+      <div class="col-md-3 mb-4">
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-filter"></i> Filtros</h5>
+          </div>
+          <div class="card-body">
+            <h6 class="mb-3">Categoría</h6>
+            <div class="d-flex flex-column gap-2">
+              <button class="btn btn-outline-primary btn-sm" onclick="applyProductFilters({})">
+                Todas
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="applyProductFilters({category: 'cañas'})">
+                Cañas
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="applyProductFilters({category: 'reels'})">
+                Reels
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="applyProductFilters({category: 'anzuelos'})">
+                Anzuelos
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="applyProductFilters({category: 'carnadas'})">
+                Carnadas
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="applyProductFilters({category: 'accesorios'})">
+                Accesorios
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos -->
+      <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>Catálogo de Productos</h3>
+          <small class="text-muted">Mostrando productos disponibles</small>
+        </div>
+        <div id="products-container" class="row g-3"></div>
+        <div class="text-center mt-4">
+          <button id="load-more-products" class="btn btn-secondary" onclick="loadMoreProducts()">Cargar más</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-light py-5">
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">
+            <img src="images/logo.png" alt="Alecho Pesca" height="30" class="me-2">
+            ALECHO PESCA
+          </h6>
+          <p class="small">Tu tienda de confianza para artículos de pesca de calidad.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">Contacto</h6>
+          <p class="small">
+            <i class="fas fa-phone"></i> +54 11 3000-0000<br>
+            <i class="fas fa-envelope"></i> info@alechopesca.com<br>
+            <i class="fas fa-map-marker-alt"></i> CABA, Argentina
+          </p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">Síguenos</h6>
+          <div>
+            <a href="https://www.instagram.com/alechopesca/" target="_blank" class="text-light me-3"><i class="fab fa-instagram fa-lg"></i></a>
+            <a href="https://www.facebook.com/alechopesca/" target="_blank" class="text-light me-3"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="https://wa.me/5491163749402" target="_blank" class="text-light me-3"><i class="fab fa-whatsapp fa-lg"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="bg-light">
+      <div class="text-center small">
+        <p class="mb-0">© 2026 Alecho Pesca - Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const category = params.get('category');
+      const search = params.get('search');
+      if (category) loadProducts('products-container', { category });
+      else if (search) {
+        document.getElementById('search-input').value = search;
+        loadProducts('products-container', { search });
+      } else loadProducts('products-container');
+      setupSearch('search-input', 'products-container');
+    });
+  </script>
+  <a href="https://wa.me/5491163749402" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+    </a>
+</body>
+</html>

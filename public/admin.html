@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Alecho Pesca</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">
+        <img src="images/logo.png" alt="Alecho Pesca" height="40" class="me-2">
+        ALECHO PESCA
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-fish"></i> Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="orders.html"><i class="fas fa-clipboard-list"></i> Mis pedidos</a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+          <li class="nav-item"><a class="nav-link" href="account.html"><i class="fas fa-user"></i> Cuenta</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h2 class="mb-4"><i class="fas fa-tools"></i> Panel de administración</h2>
+    <div id="admin-alert" class="alert alert-danger" style="display:none;"></div>
+
+    <div id="admin-content" style="display:none;">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Productos</h5>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">Filtrar por categoría</label>
+                  <select id="admin-category-filter" class="form-select">
+                    <option value="">Todas</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Buscar producto</label>
+                  <input id="admin-product-search" class="form-control" type="search" placeholder="Nombre...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Acciones masivas</label>
+                  <div class="input-group">
+                    <input id="bulk-stock" type="number" class="form-control" placeholder="Stock" min="0">
+                    <input id="bulk-price" type="number" step="0.01" class="form-control" placeholder="Precio">
+                    <input id="bulk-wholesale" type="number" step="0.1" class="form-control" placeholder="Mayorista %">
+                    <button class="btn btn-secondary" id="bulk-apply">Aplicar</button>
+                  </div>
+                  <small class="text-muted">Seleccione varios productos y aplique cambios (precio/stock/precio mayorista).</small>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" id="select-all-products"></th>
+                      <th>ID</th>
+                      <th>Foto</th>
+                      <th>Nombre</th>
+                      <th>Stock</th>
+                      <th>Precio (minorista)</th>
+                      <th>Precio (mayorista)</th>
+                      <th>Categoría</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-products"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Usuarios</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Tipo</th>
+                      <th>Admin</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-users"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Reseñas</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Producto</th>
+                      <th>Usuario</th>
+                      <th>Rating</th>
+                      <th>Comentario</th>
+                      <th>Fecha</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-reviews"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Agregar producto</h5>
+            </div>
+            <div class="card-body">
+              <form id="product-form">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" name="name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Categoría</label>
+                    <input type="text" class="form-control" name="category" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Precio</label>
+                    <input type="number" step="0.01" class="form-control" name="price" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Precio mayorista</label>
+                    <input type="number" step="0.01" class="form-control" name="wholesalePrice" placeholder="(opcional)">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Stock</label>
+                    <input type="number" class="form-control" name="stock" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Rating</label>
+                    <input type="number" step="0.1" min="0" max="5" class="form-control" name="rating">
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Imagen (URL)</label>
+                    <input type="text" class="form-control" name="image" placeholder="https://...">
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Subir imágenes (puede seleccionar varias)</label>
+                    <div id="image-drop-zone" class="input-group drop-zone">
+                      <input type="file" class="form-control" id="product-image-file" accept="image/*" multiple>
+                      <button class="btn btn-outline-secondary" type="button" id="upload-image-btn">Subir</button>
+                    </div>
+                    <small class="text-muted">Se agregarán automáticamente al listado de imágenes del producto.</small>
+                    <div id="image-upload-feedback" class="form-text text-danger mt-1"></div>
+                    <div class="progress mt-2" style="height: 8px; display: none;" id="image-upload-progress">
+                      <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    <div id="image-preview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Subir videos (mp4/local)</label>
+                    <div id="video-drop-zone" class="input-group drop-zone">
+                      <input type="file" class="form-control" id="product-video-file" accept="video/*" multiple>
+                      <button class="btn btn-outline-secondary" type="button" id="upload-video-btn">Subir</button>
+                    </div>
+                    <small class="text-muted">Se agregarán automáticamente a la lista de videos del producto.</small>
+                    <div id="video-upload-feedback" class="form-text text-danger mt-1"></div>
+                    <div class="progress mt-2" style="height: 8px; display: none;" id="video-upload-progress">
+                      <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    <div id="video-preview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-control" name="description" rows="2"></textarea>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Imágenes adicionales (una URL por línea)</label>
+                    <textarea class="form-control" name="images" rows="2" placeholder="https://..."></textarea>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Videos (YouTube, una URL por línea)</label>
+                    <textarea class="form-control" name="videos" rows="2" placeholder="https://youtu.be/..." ></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button class="btn btn-primary" type="submit">Guardar producto</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Configuración de pagos</h5>
+            </div>
+            <div class="card-body">
+              <form id="payment-settings-form">
+                <div class="mb-3">
+                  <label class="form-label">Recargo tarjeta crédito (%)</label>
+                  <input type="number" step="0.1" min="0" class="form-control" name="creditSurcharge">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Recargo tarjeta débito (%)</label>
+                  <input type="number" step="0.1" min="0" class="form-control" name="debitSurcharge">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Recargo Mercado Pago (%)</label>
+                  <input type="number" step="0.1" min="0" class="form-control" name="mercadoPagoFee">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Recargo transferencia (%)</label>
+                  <input type="number" step="0.1" min="0" class="form-control" name="transferFee">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Token Mercado Pago (sandbox/test)</label>
+                  <input type="text" class="form-control" name="mercadopagoAccessToken" placeholder="P.ej. APP_USR-..." autocomplete="off">
+                  <div class="form-text">Guarda tu token solo si quieres usar Mercado Pago en modo real.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Public Key Mercado Pago</label>
+                  <input type="text" class="form-control" name="mercadopagoPublicKey" placeholder="P.ej. APP_USR-..." autocomplete="off">
+                  <div class="form-text">Necesaria para el SDK de Mercado Pago en el frontend.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Recargo efectivo (%)</label>
+                  <input type="number" step="0.1" min="0" class="form-control" name="cashFee">
+                </div>
+                <button class="btn btn-secondary" type="submit">Guardar configuración</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-light py-5">
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">
+            <img src="images/logo.png" alt="Alecho Pesca" height="30" class="me-2">
+            ALECHO PESCA
+          </h6>
+          <p class="small">Tu tienda de confianza para artículos de pesca de calidad.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">Contacto</h6>
+          <p class="small">
+            <i class="fas fa-phone"></i> +54 11 3000-0000<br>
+            <i class="fas fa-envelope"></i> info@alechopesca.com<br>
+            <i class="fas fa-map-marker-alt"></i> CABA, Argentina
+          </p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h6 class="fw-bold mb-3">Síguenos</h6>
+          <div>
+            <a href="https://www.instagram.com/alechopesca/" target="_blank" class="text-light me-3"><i class="fab fa-instagram fa-lg"></i></a>
+            <a href="https://www.facebook.com/alechopesca/" target="_blank" class="text-light me-3"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="https://wa.me/5491163749402" target="_blank" class="text-light me-3"><i class="fab fa-whatsapp fa-lg"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="bg-light">
+      <div class="text-center small">
+        <p class="mb-0">© 2026 Alecho Pesca - Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+
+  <a href="https://wa.me/5491163749402" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</body>
+</html>
