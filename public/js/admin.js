@@ -439,7 +439,9 @@ async function ensureAdmin() {
 
   // Si no está en localStorage, verificar con el servidor
   try {
-    const res = await fetch('https://alecho-pesca.onrender.com/api/auth/me');
+    const res = await fetch('https://alecho-pesca.onrender.com/api/auth/me', {
+      credentials: 'include'
+    });
     const data = await res.json();
     if (!data.user || !data.user.isAdmin) {
       document.getElementById('admin-content').style.display = 'none';
