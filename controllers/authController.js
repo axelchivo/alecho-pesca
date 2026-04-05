@@ -57,7 +57,14 @@ exports.login = async (req, res) => {
       });
     });
     console.log('✅ Sesión guardada correctamente');
-    res.json({ success: true, user });
+
+    // 🔥 Si es admin, enviar URL con parámetro de autenticación
+    if (user.isAdmin) {
+      const redirectUrl = `https://alecho-pesca.onrender.com/admin.html?authenticated=true&t=${Date.now()}`;
+      res.json({ success: true, user, redirectUrl });
+    } else {
+      res.json({ success: true, user });
+    }
   } catch (err) {
     console.error('❌ Error guardando sesión:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
