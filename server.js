@@ -88,8 +88,7 @@ console.log('ðŸ” Session config:', {
 // ðŸ”¥ Debug middleware para sesiones
 app.use((req, res, next) => {
   console.log(`ðŸ” ${req.method} ${req.path} - Session ID:`, req.session?.id);
-  console.log(`ðŸ” ${req.method} ${req.path} - User ID:`, req.session?.userId);
-  next();
+  console.log(`ðŸ” ${req.method} ${req.path} - User ID:`, req.session?.userId);  console.log(`🔍 ${req.method} ${req.path} - Session cookie:`, req.session?.cookie);  next();
 });
 
 // ðŸ”¥ Ruta de test para sesiones
