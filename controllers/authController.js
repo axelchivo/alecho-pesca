@@ -48,6 +48,8 @@ exports.login = async (req, res) => {
   console.log('🔍 Login - User isAdmin:', user.isAdmin);
   console.log('🔍 Login - Session cookie config:', req.session.cookie);
 
+  console.log('🔍 About to check admin condition...');
+
   // 🔥 Si es admin, enviar URL con parámetro de autenticación
   console.log('🔍 Checking if user is admin:', user.isAdmin, typeof user.isAdmin);
   if (user.isAdmin === true) {
