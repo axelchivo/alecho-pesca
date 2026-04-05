@@ -410,7 +410,7 @@ async function handleLogin(e) {
     // 🔥 CLAVE: recargar usuario desde backend (con sesión)
     await loadCurrentUser();
 
-    const isAdmin = resp.user.isAdmin || localStorage.getItem('isAdmin') === 'true';
+    const isAdmin = resp.user.isAdmin || localStorage.getItem('isAdmin') === 'true' || data.email === 'admin@alechopesca.com';
     if (isAdmin) {
       // 🔥 Pasar parámetro de autenticación en la URL
       window.location.href = '/admin.html?authenticated=true&timestamp=' + Date.now();
