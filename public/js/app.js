@@ -412,7 +412,8 @@ async function handleLogin(e) {
 
     const isAdmin = resp.user.isAdmin || localStorage.getItem('isAdmin') === 'true';
     if (isAdmin) {
-      window.location.href = '/admin.html';
+      // 🔥 Pasar parámetro de autenticación en la URL
+      window.location.href = '/admin.html?authenticated=true&timestamp=' + Date.now();
     } else {
       window.location.href = '/account.html';
     }

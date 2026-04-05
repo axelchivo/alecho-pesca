@@ -431,17 +431,28 @@ async function deleteUser(userId) {
 }
 
 async function ensureAdmin() {
-  // Primero verificar localStorage (más rápido y confiable)
+  // 🔥 Primero verificar parámetro de URL (de login reciente)
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAuthenticatedViaUrl = urlParams.get('authenticated') === 'true';
+  
+  // Verificar localStorage
   const isAdminFromStorage = localStorage.getItem('isAdmin') === 'true';
 
-  if (isAdminFromStorage) {
+  if (isAuthenticatedViaUrl || isAdminFromStorage) {
+    // Limpiar la URL
+    if (isAuthenticatedViaUrl) {
+      window.history.replaceState({}, document.title, '/admin.html');
+      // Actualizar localStorage para persistir la sesión
+      localStorage.setItem('isAdmin', 'true');
+    }
+    
     // Mostrar el contenido administrativo
     document.getElementById('admin-alert').style.display = 'none';
     document.getElementById('admin-content').style.display = 'block';
     return true;
   }
 
-  // Si no está en localStorage, verificar con el servidor
+  // Si no está autenticado, verificar con el servidor como fallback
   try {
     const res = await fetch('https://alecho-pesca.onrender.com/api/auth/me', {
       credentials: 'include'
