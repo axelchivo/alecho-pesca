@@ -117,15 +117,12 @@ app.get('/api/test-session-read', (req, res) => {
 
 // Nueva ruta de test
 app.get('/api/test-session-v2', (req, res) => {
-  console.log('ðŸ” /api/test-session-v2 - Creating test session');
-  req.session.testData = 'Hello from session v2!';
-  req.session.save((err) => {
-    if (err) {
-      console.error('âŒ Error saving test session:', err);
-      return res.status(500).json({ error: 'Error saving session' });
-    }
-    console.log('âœ… Test session saved, ID:', req.session.id);
-    res.json({ success: true, sessionId: req.session.id, testData: req.session.testData });
+  console.log('🔍 /api/test-session-v2 - HIT! Session ID:', req.session?.id);
+  res.json({
+    success: true,
+    message: 'Endpoint reached!',
+    sessionId: req.session?.id,
+    hasSession: !!req.session
   });
 });
 
