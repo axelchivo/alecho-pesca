@@ -127,9 +127,9 @@ app.get('/api/xyz-test-123', (req, res) => {
 });
 
 // ======================
-// Rutas API (MOVIDAS ANTES DE ARCHIVOS ESTÃTICOS)
 // ======================
-/*
+// Rutas API (MOVIDAS ANTES DE ARCHIVOS ESTÁTICOS)
+// ======================
 const productsRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
 const contactRoutes = require('./routes/contact');

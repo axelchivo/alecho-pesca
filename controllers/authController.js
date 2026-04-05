@@ -63,7 +63,6 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
-};
 
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
