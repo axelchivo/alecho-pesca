@@ -5,7 +5,7 @@ const userModel = require('../models/userModel');
 const { sanitizeString } = require('../utils/sanitize');
 
 exports.register = async (req, res) => {
-  const { name, email, password, type } = req.body;
+  const { name, email, password, type, isAdmin } = req.body;
   const cleanEmail = sanitizeString(email || '').toLowerCase();
   const existingUser = await userModel.findByEmail(cleanEmail);
   if (existingUser) {
@@ -13,13 +13,17 @@ exports.register = async (req, res) => {
   }
 
   // Solo un administrador puede crear otro administrador
-  const isAdmin = false;
+  const currentUser = await userModel.findById(req.session.userId);  // Verifica si el creador es admin
+  if (currentUser && currentUser.isAdmin === false && isAdmin) {
+    return res.status(403).json({ error: 'No tienes permiso para crear un administrador' });
+  }
+
   const user = await userModel.create({
     name: sanitizeString(name),
     email: cleanEmail,
     password,
     type: sanitizeString(type),
-    isAdmin,
+    isAdmin,  // Permite que el nuevo usuario tenga isAdmin según el valor enviado
   });
   req.session.userId = user.id;
   res.json({ success: true, user });
@@ -39,7 +43,13 @@ exports.login = async (req, res) => {
   }
 
   req.session.userId = user.id;
-  res.json({ success: true, user });
+
+  // Verifica si es administrador y otorga acceso
+  if (user.isAdmin) {
+    return res.json({ success: true, user, message: 'Bienvenido al panel de administrador' });
+  } else {
+    return res.status(403).json({ error: 'Acceso denegado. Se requiere ser administrador.' });
+  }
 };
 
 exports.logout = (req, res) => {

@@ -7,9 +7,12 @@ const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
-require('dotenv').config(); // asegurarse de leer .env si está presente
+require('dotenv').config();
 
 const app = express();
+
+// 🔥 IMPORTANTE PARA RENDER (cookies seguras detrás de proxy)
+app.set('trust proxy', 1);
 
 // ======================
 // Configuración
@@ -19,7 +22,6 @@ const MONGO_URL = process.env.MONGO_URL;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default_secret';
 const DB_TYPE = (process.env.DB_TYPE || 'json').toLowerCase();
 const USE_MONGO = DB_TYPE === 'mongo' || DB_TYPE === 'mongodb';
-const ENV = process.env.NODE_ENV || 'development';
 const DATA_DIR = path.join(__dirname, 'data');
 
 // Asegurar directorio de datos
@@ -29,7 +31,7 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 // Conexión a MongoDB
 // ======================
 if (USE_MONGO) {
-  if (!MONGO_URL) throw new Error('❌ MONGO_URL no definida en variables de entorno');
+  if (!MONGO_URL) throw new Error('❌ MONGO_URL no definida');
 
   mongoose
     .connect(MONGO_URL)
@@ -45,6 +47,9 @@ if (USE_MONGO) {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// ======================
+// Sesiones
+// ======================
 let sessionConfig = {
   secret: SESSION_SECRET,
   resave: false,
@@ -53,7 +58,7 @@ let sessionConfig = {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
     sameSite: 'lax',
-    secure: ENV === 'production',
+    secure: true, // 🔥 SIEMPRE true en Render (HTTPS)
   },
 };
 
@@ -66,7 +71,7 @@ if (USE_MONGO) {
   });
   console.log('Usando MongoDB para sesiones');
 } else {
-  console.log('Usando sesiones en memoria (JSON storage)');
+  console.log('Usando sesiones en memoria (JSON)');
 }
 
 app.use(session(sessionConfig));
