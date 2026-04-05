@@ -57,8 +57,8 @@ let sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    sameSite: 'lax', // 🔥 Cambiar temporalmente a 'lax' para probar
-    secure: true, // 🔥 SIEMPRE true en Render (HTTPS)
+    sameSite: 'lax',
+    secure: false, // 🔥 Temporalmente false para probar
   },
 };
 
