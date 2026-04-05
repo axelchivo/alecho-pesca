@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
 
     // 🔥 Si es admin, enviar URL con parámetro de autenticación
     console.log('🔍 Checking if user is admin:', user.isAdmin, typeof user.isAdmin);
-    if (user.isAdmin) {
+    if (user.isAdmin === true) {
       const redirectUrl = `https://alecho-pesca.onrender.com/admin.html?authenticated=true&t=${Date.now()}`;
       console.log('🔍 Sending redirect URL for admin:', redirectUrl);
       res.json({ success: true, user, redirectUrl });
