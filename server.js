@@ -129,6 +129,7 @@ app.get('/api/xyz-test-123', (req, res) => {
 // ======================
 // Rutas API (MOVIDAS ANTES DE ARCHIVOS ESTÃTICOS)
 // ======================
+/*
 const productsRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
 const contactRoutes = require('./routes/contact');
@@ -146,6 +147,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reviews', reviewsRoutes);
+*/
 
 // ======================
 // Archivos estÃ¡ticos
