@@ -147,7 +147,6 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reviews', reviewsRoutes);
-*/
 
 // ======================
 // Archivos estÃ¡ticos

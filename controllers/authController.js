@@ -30,8 +30,39 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  // 🔥 TEST: Forzar error para verificar si los cambios se despliegan
-  return res.status(500).json({ error: 'TEST ERROR - Changes are deployed!' });
+  const { email, password } = req.body;
+  const cleanEmail = sanitizeString(email || '').toLowerCase();
+  const user = await userModel.findByEmail(cleanEmail);
+  if (!user || !userModel.verifyPassword(user, password)) {
+    return res.status(401).json({ error: 'Credenciales inválidas' });
+  }
+
+  // Si estaba en texto plano, se actualiza a hash
+  if (user.password && !user.password.startsWith('$2')) {
+    await userModel.update(user.id, { password });
+  }
+
+  req.session.userId = user.id;
+  console.log('🔍 Login - Session ID:', req.session.id);
+  console.log('🔍 Login - User ID saved:', req.session.userId);
+  console.log('🔍 Login - User isAdmin:', user.isAdmin);
+  console.log('🔍 Login - Session cookie config:', req.session.cookie);
+
+  // 🔥 Forzar guardado de sesión con async/await
+  try {
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+    console.log('✅ Sesión guardada correctamente');
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error('❌ Error guardando sesión:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
 };
 
 exports.logout = (req, res) => {

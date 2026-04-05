@@ -1,7 +1,7 @@
 {
   "name": "alecho-pesca",
   "version": "1.0.0",
-  "description": "Tienda de artículos de pesca Alecho Pesca",
+  "description": "Tienda de artículos de pesca Alecho Pesca - Fixed sessions",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
