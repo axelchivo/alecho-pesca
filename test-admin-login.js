@@ -13,7 +13,7 @@ async function testSession() {
   try {
     // 1. Crear sesión de test
     console.log('1. Creando sesión de test...');
-    const testResponse = await fetch('https://alecho-pesca.onrender.com/api/test-session-v2', {
+    const testResponse = await fetch('https://alecho-pesca.onrender.com/api/xyz-test-123', {
       headers: {
         'User-Agent': 'Node.js Test Script'
       }

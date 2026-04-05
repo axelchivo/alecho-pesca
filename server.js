@@ -116,8 +116,8 @@ app.get('/api/test-session-read', (req, res) => {
 });
 
 // Nueva ruta de test
-app.get('/api/test-session-v2', (req, res) => {
-  console.log('🔍 /api/test-session-v2 - HIT! Session ID:', req.session?.id);
+app.get('/api/xyz-test-123', (req, res) => {
+  console.log('🔍 /api/xyz-test-123 - HIT! Session ID:', req.session?.id);
   res.json({
     success: true,
     message: 'Endpoint reached!',
