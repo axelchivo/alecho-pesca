@@ -57,7 +57,7 @@ let sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    sameSite: 'none', // ðŸ”¥ Necesario para cross-site cookies con Cloudflare
+    sameSite: 'lax', // ðŸ”¥ Cambiar a 'lax' para probar
     secure: true, // ðŸ”¥ SIEMPRE true en Render (HTTPS)
   },
 };
