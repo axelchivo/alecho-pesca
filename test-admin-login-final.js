@@ -18,7 +18,7 @@ async function testAdminLogin() {
     });
 
     const loginData = await loginResponse.json();
-    console.log('Login response:', loginData);
+    console.log('Login response:', JSON.stringify(loginData, null, 2));
 
     if (!loginResponse.ok) {
       console.log('❌ Login falló');

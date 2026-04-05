@@ -70,6 +70,7 @@ exports.login = async (req, res) => {
     }
   } catch (err) {
     console.error('❌ Error guardando sesión:', err);
+    console.error('❌ Error stack:', err.stack);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
