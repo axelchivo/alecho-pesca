@@ -43,6 +43,10 @@ exports.login = async (req, res) => {
   }
 
   req.session.userId = user.id;
+  console.log('🔍 Login - Session ID:', req.session.id);
+  console.log('🔍 Login - User ID saved:', req.session.userId);
+  console.log('🔍 Login - User isAdmin:', user.isAdmin);
+
   res.json({ success: true, user });
 };
 
@@ -70,8 +74,11 @@ exports.ensureAdmin = async (req, res, next) => {
 
 exports.getMe = async (req, res) => {
   const userId = req.session?.userId;
+  console.log('🔍 /me - Session ID:', req.session?.id);
+  console.log('🔍 /me - User ID from session:', userId);
   if (!userId) return res.json({ user: null });
   const user = await userModel.findById(userId);
+  console.log('🔍 /me - User found:', user ? user.email : 'null');
   res.json({
     user: user
       ? {
