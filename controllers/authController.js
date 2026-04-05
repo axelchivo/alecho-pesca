@@ -43,13 +43,7 @@ exports.login = async (req, res) => {
   }
 
   req.session.userId = user.id;
-
-  // Verifica si es administrador y otorga acceso
-  if (user.isAdmin) {
-    return res.json({ success: true, user, message: 'Bienvenido al panel de administrador' });
-  } else {
-    return res.status(403).json({ error: 'Acceso denegado. Se requiere ser administrador.' });
-  }
+  res.json({ success: true, user });
 };
 
 exports.logout = (req, res) => {

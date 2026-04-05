@@ -401,6 +401,10 @@ async function handleLogin(e) {
   const resp = await res.json();
 
   if (resp.success) {
+    // 🔥 Guardar inmediatamente en localStorage
+    localStorage.setItem('userType', resp.user.type);
+    localStorage.setItem('isAdmin', resp.user.isAdmin ? 'true' : 'false');
+    
     showMessage('Login correcto');
 
     // 🔥 CLAVE: recargar usuario desde backend (con sesión)
