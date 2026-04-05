@@ -48,30 +48,15 @@ exports.login = async (req, res) => {
   console.log('🔍 Login - User isAdmin:', user.isAdmin);
   console.log('🔍 Login - Session cookie config:', req.session.cookie);
 
-  // 🔥 Forzar guardado de sesión con async/await
-  try {
-    await new Promise((resolve, reject) => {
-      req.session.save((err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-    console.log('✅ Sesión guardada correctamente');
-
-    // 🔥 Si es admin, enviar URL con parámetro de autenticación
-    console.log('🔍 Checking if user is admin:', user.isAdmin, typeof user.isAdmin);
-    if (user.isAdmin === true) {
-      const redirectUrl = `https://alecho-pesca.onrender.com/admin.html?authenticated=true&t=${Date.now()}`;
-      console.log('🔍 Sending redirect URL for admin:', redirectUrl);
-      res.json({ success: true, user, redirectUrl });
-    } else {
-      console.log('🔍 User is not admin, sending regular response');
-      res.json({ success: true, user });
-    }
-  } catch (err) {
-    console.error('❌ Error guardando sesión:', err);
-    console.error('❌ Error stack:', err.stack);
-    res.status(500).json({ error: 'Error interno del servidor' });
+  // 🔥 Si es admin, enviar URL con parámetro de autenticación
+  console.log('🔍 Checking if user is admin:', user.isAdmin, typeof user.isAdmin);
+  if (user.isAdmin === true) {
+    const redirectUrl = `https://alecho-pesca.onrender.com/admin.html?authenticated=true&t=${Date.now()}`;
+    console.log('🔍 Sending redirect URL for admin:', redirectUrl);
+    res.json({ success: true, user, redirectUrl });
+  } else {
+    console.log('🔍 User is not admin, sending regular response');
+    res.json({ success: true, user });
   }
 };
 
