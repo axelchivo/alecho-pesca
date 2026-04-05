@@ -59,10 +59,13 @@ exports.login = async (req, res) => {
     console.log('✅ Sesión guardada correctamente');
 
     // 🔥 Si es admin, enviar URL con parámetro de autenticación
+    console.log('🔍 Checking if user is admin:', user.isAdmin, typeof user.isAdmin);
     if (user.isAdmin) {
       const redirectUrl = `https://alecho-pesca.onrender.com/admin.html?authenticated=true&t=${Date.now()}`;
+      console.log('🔍 Sending redirect URL for admin:', redirectUrl);
       res.json({ success: true, user, redirectUrl });
     } else {
+      console.log('🔍 User is not admin, sending regular response');
       res.json({ success: true, user });
     }
   } catch (err) {
