@@ -92,6 +92,29 @@ app.use((req, res, next) => {
   next();
 });
 
+// 🔥 Ruta de test para sesiones
+app.get('/api/test-session', (req, res) => {
+  console.log('🔍 /api/test-session - Creating test session');
+  req.session.testData = 'Hello from session!';
+  req.session.save((err) => {
+    if (err) {
+      console.error('❌ Error saving test session:', err);
+      return res.status(500).json({ error: 'Error saving session' });
+    }
+    console.log('✅ Test session saved, ID:', req.session.id);
+    res.json({ success: true, sessionId: req.session.id, testData: req.session.testData });
+  });
+});
+
+app.get('/api/test-session-read', (req, res) => {
+  console.log('🔍 /api/test-session-read - Reading session');
+  res.json({
+    sessionId: req.session?.id,
+    testData: req.session?.testData,
+    userId: req.session?.userId
+  });
+});
+
 // ======================
 // Archivos estáticos
 // ======================
