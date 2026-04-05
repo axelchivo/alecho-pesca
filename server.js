@@ -76,6 +76,22 @@ if (USE_MONGO) {
 
 app.use(session(sessionConfig));
 
+// 🔥 Debug: Verificar configuración de sesión
+console.log('🔍 Session config:', {
+  secret: sessionConfig.secret ? 'SET' : 'NOT SET',
+  resave: sessionConfig.resave,
+  saveUninitialized: sessionConfig.saveUninitialized,
+  cookie: sessionConfig.cookie,
+  store: sessionConfig.store ? 'MongoStore configured' : 'Memory store'
+});
+
+// 🔥 Debug middleware para sesiones
+app.use((req, res, next) => {
+  console.log(`🔍 ${req.method} ${req.path} - Session ID:`, req.session?.id);
+  console.log(`🔍 ${req.method} ${req.path} - User ID:`, req.session?.userId);
+  next();
+});
+
 // ======================
 // Archivos estáticos
 // ======================

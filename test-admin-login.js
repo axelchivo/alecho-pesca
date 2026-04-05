@@ -27,6 +27,12 @@ async function testAdminLogin() {
 
     console.log('Status code:', loginResponse.status);
 
+    // Imprimir todos los headers
+    console.log('Headers de respuesta:');
+    for (const [key, value] of loginResponse.headers.entries()) {
+      console.log(`  ${key}: ${value}`);
+    }
+
     // Guardar cookies de la respuesta
     const setCookieHeader = loginResponse.headers.get('set-cookie');
     if (setCookieHeader) {
