@@ -251,6 +251,7 @@ async function applyBulkUpdates() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      credentials: 'include',
     });
   }
 

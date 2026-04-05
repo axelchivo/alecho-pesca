@@ -410,7 +410,8 @@ async function handleLogin(e) {
     // 🔥 CLAVE: recargar usuario desde backend (con sesión)
     await loadCurrentUser();
 
-    if (currentUser?.isAdmin) {
+    const isAdmin = resp.user.isAdmin || localStorage.getItem('isAdmin') === 'true';
+    if (isAdmin) {
       window.location.href = '/admin.html';
     } else {
       window.location.href = '/account.html';
