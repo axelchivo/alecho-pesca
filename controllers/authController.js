@@ -46,8 +46,18 @@ exports.login = async (req, res) => {
   console.log('🔍 Login - Session ID:', req.session.id);
   console.log('🔍 Login - User ID saved:', req.session.userId);
   console.log('🔍 Login - User isAdmin:', user.isAdmin);
+  console.log('🔍 Login - Session cookie config:', req.session.cookie);
 
-  res.json({ success: true, user });
+  // 🔥 Forzar guardado de sesión
+  req.session.save((err) => {
+    if (err) {
+      console.error('❌ Error guardando sesión:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+    console.log('✅ Sesión guardada correctamente');
+    res.json({ success: true, user });
+  });
+};
 };
 
 exports.logout = (req, res) => {
