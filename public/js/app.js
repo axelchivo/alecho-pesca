@@ -362,18 +362,25 @@ async function handleRegister(e) {
     password: form.password.value,
     type: form.type?.value || 'minorista',
   };
+
   const res = await fetch(api.register, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // 🔥 IMPORTANTE
     body: JSON.stringify(data),
   });
+
   const resp = await res.json();
+
   if (resp.success) {
-    localStorage.setItem('userType', resp.user.type);
-    localStorage.setItem('isAdmin', resp.user.isAdmin ? 'true' : 'false');
     showMessage('Registro exitoso');
+
+    await loadCurrentUser();
+
     window.location.href = '/account.html';
-  } else showMessage(resp.error, 'danger');
+  } else {
+    showMessage(resp.error, 'danger');
+  }
 }
 
 async function handleLogin(e) {
@@ -383,27 +390,31 @@ async function handleLogin(e) {
     email: form.email.value,
     password: form.password.value,
   };
+
   const res = await fetch(api.login, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // 🔥 IMPORTANTE
     body: JSON.stringify(data),
   });
+
   const resp = await res.json();
+
   if (resp.success) {
-    localStorage.setItem('userType', resp.user.type);
-    localStorage.setItem('isAdmin', resp.user.isAdmin ? 'true' : 'false');
     showMessage('Login correcto');
-    const isAccountPage =
-      window.location.pathname.endsWith('/login.html') ||
-      window.location.pathname.endsWith('/account.html');
-    if (resp.user.isAdmin) {
+
+    // 🔥 CLAVE: recargar usuario desde backend (con sesión)
+    await loadCurrentUser();
+
+    if (currentUser?.isAdmin) {
       window.location.href = '/admin.html';
-    } else if (isAccountPage) {
-      window.location.href = '/account.html';
     } else {
-      window.location.href = '/';
+      window.location.href = '/account.html';
     }
-  } else showMessage(resp.error, 'danger');
+
+  } else {
+    showMessage(resp.error, 'danger');
+  }
 }
 
 async function handleLogout() {
