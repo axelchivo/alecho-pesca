@@ -4,14 +4,78 @@
 const fetch = require('node-fetch');
 const { CookieJar } = require('tough-cookie');
 
-async function testAdminLogin() {
-  console.log('🔍 Probando login del admin con manejo de cookies...');
+async function testSession() {
+  console.log('🔍 Probando sesiones básicas...');
 
   // Crear un jar de cookies
   const jar = new CookieJar();
 
   try {
-    // 1. Intentar login
+    // 1. Crear sesión de test
+    console.log('1. Creando sesión de test...');
+    const testResponse = await fetch('https://alecho-pesca.onrender.com/api/test-session', {
+      headers: {
+        'User-Agent': 'Node.js Test Script'
+      }
+    });
+
+    console.log('Status code:', testResponse.status);
+
+    // Imprimir headers
+    console.log('Headers de respuesta:');
+    for (const [key, value] of testResponse.headers.entries()) {
+      console.log(`  ${key}: ${value}`);
+    }
+
+    // Guardar cookies
+    const setCookieHeader = testResponse.headers.get('set-cookie');
+    if (setCookieHeader) {
+      console.log('✅ Cookies recibidas:', setCookieHeader);
+      const cookies = setCookieHeader.split(',');
+      for (const cookie of cookies) {
+        try {
+          await jar.setCookie(cookie, 'https://alecho-pesca.onrender.com');
+        } catch (e) {
+          console.log('Error parseando cookie:', cookie);
+        }
+      }
+    } else {
+      console.log('❌ No hay cookies set-cookie');
+    }
+
+    const testData = await testResponse.json();
+    console.log('Respuesta test-session:', JSON.stringify(testData, null, 2));
+
+    if (setCookieHeader) {
+      // 2. Leer sesión
+      console.log('2. Leyendo sesión...');
+      const cookies = await jar.getCookies('https://alecho-pesca.onrender.com');
+      const cookieHeader = cookies.map(c => `${c.key}=${c.value}`).join('; ');
+
+      const readResponse = await fetch('https://alecho-pesca.onrender.com/api/test-session-read', {
+        headers: {
+          'Cookie': cookieHeader,
+          'User-Agent': 'Node.js Test Script'
+        }
+      });
+
+      const readData = await readResponse.json();
+      console.log('Respuesta test-session-read:', JSON.stringify(readData, null, 2));
+    }
+
+  } catch (error) {
+    console.error('❌ Error en el test:', error.message);
+  }
+}
+
+async function testAdminLogin() {
+  console.log('\n🔍 Probando login del admin...');
+
+  // Crear un jar de cookies
+  const jar = new CookieJar();
+
+  try {
+    // Intentar login
     console.log('1. Enviando petición de login...');
     const loginResponse = await fetch('https://alecho-pesca.onrender.com/api/auth/login', {
       method: 'POST',
@@ -27,71 +91,24 @@ async function testAdminLogin() {
 
     console.log('Status code:', loginResponse.status);
 
-    // Imprimir todos los headers
+    // Imprimir headers
     console.log('Headers de respuesta:');
     for (const [key, value] of loginResponse.headers.entries()) {
       console.log(`  ${key}: ${value}`);
     }
 
-    // Guardar cookies de la respuesta
-    const setCookieHeader = loginResponse.headers.get('set-cookie');
-    if (setCookieHeader) {
-      console.log('2. Cookies recibidas:', setCookieHeader);
-      // Parsear y guardar cookies
-      const cookies = setCookieHeader.split(',');
-      for (const cookie of cookies) {
-        try {
-          await jar.setCookie(cookie, 'https://alecho-pesca.onrender.com');
-        } catch (e) {
-          console.log('Error parseando cookie:', cookie);
-        }
-      }
-    }
-
     const loginData = await loginResponse.json();
-    console.log('3. Respuesta del login:', JSON.stringify(loginData, null, 2));
-
-    if (loginData.success && loginData.user) {
-      console.log('✅ Login exitoso');
-      console.log('   - User ID:', loginData.user._id || loginData.user.id);
-      console.log('   - Email:', loginData.user.email);
-      console.log('   - isAdmin:', loginData.user.isAdmin);
-
-      // Obtener cookies guardadas
-      const cookies = await jar.getCookies('https://alecho-pesca.onrender.com');
-      console.log('4. Cookies guardadas:', cookies.map(c => `${c.key}=${c.value}`).join('; '));
-
-      // 2. Verificar si la sesión se creó
-      console.log('5. Verificando endpoint /me...');
-
-      // Construir header de cookie
-      const cookieHeader = cookies.map(c => `${c.key}=${c.value}`).join('; ');
-
-      const meResponse = await fetch('https://alecho-pesca.onrender.com/api/auth/me', {
-        headers: {
-          'Cookie': cookieHeader,
-          'User-Agent': 'Node.js Test Script'
-        }
-      });
-
-      const meData = await meResponse.json();
-      console.log('Respuesta /me:', JSON.stringify(meData, null, 2));
-
-      if (meData.user) {
-        console.log('✅ Sesión creada correctamente');
-        console.log('   - /me isAdmin:', meData.user.isAdmin);
-      } else {
-        console.log('❌ No hay sesión activa');
-      }
-
-    } else {
-      console.log('❌ Login fallido');
-      console.log('Error:', loginData.error);
-    }
+    console.log('Respuesta login:', JSON.stringify(loginData, null, 2));
 
   } catch (error) {
-    console.error('❌ Error en el test:', error.message);
+    console.error('❌ Error en login:', error.message);
   }
 }
 
-testAdminLogin();
+// Ejecutar tests
+async function runTests() {
+  await testSession();
+  await testAdminLogin();
+}
+
+runTests();

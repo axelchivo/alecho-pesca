@@ -57,8 +57,8 @@ let sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    sameSite: 'lax',
-    secure: false, // 🔥 Temporalmente false para probar
+    sameSite: 'none', // 🔥 Necesario para cross-site cookies con Cloudflare
+    secure: true, // 🔥 SIEMPRE true en Render (HTTPS)
   },
 };
 
@@ -116,12 +116,7 @@ app.get('/api/test-session-read', (req, res) => {
 });
 
 // ======================
-// Archivos estáticos
-// ======================
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ======================
-// Rutas
+// Rutas API (MOVIDAS ANTES DE ARCHIVOS ESTÁTICOS)
 // ======================
 const productsRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
@@ -140,6 +135,11 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reviews', reviewsRoutes);
+
+// ======================
+// Archivos estáticos
+// ======================
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ======================
 // Frontend fallback
