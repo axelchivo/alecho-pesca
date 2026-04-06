@@ -39,6 +39,7 @@ async function createAdminUser() {
       password: adminPassword,
       type: 'admin',
       isAdmin: true,
+      isVerified: true,
     });
 
     console.log('✅ Usuario administrador creado exitosamente:', adminUser);

@@ -17,6 +17,8 @@ if (isMongo) {
       password: { type: String, required: true },
       type: { type: String, default: 'minorista' },
       isAdmin: { type: Boolean, default: false },
+      isVerified: { type: Boolean, default: false },
+      verificationToken: { type: String, default: null },
       location: { type: String, default: '' },
     },
     {
@@ -79,7 +81,7 @@ function verifyPassword(user, plain) {
 }
 
 const userModel = {
-  create: async ({ name, email, password, type = 'minorista', isAdmin = false, location = '' }) => {
+  create: async ({ name, email, password, type = 'minorista', isAdmin = false, isVerified = false, verificationToken = null, location = '' }) => {
     if (isMongo) {
       const user = await UserModel.create({
         name,
@@ -87,6 +89,8 @@ const userModel = {
         password: hashPassword(password),
         type,
         isAdmin,
+        isVerified,
+        verificationToken,
         location,
       });
       return user.toJSON();
@@ -99,6 +103,8 @@ const userModel = {
         password: hashPassword(password),
         type,
         isAdmin,
+        isVerified,
+        verificationToken,
         location,
         createdAt: new Date().toISOString(),
       };
@@ -114,6 +120,15 @@ const userModel = {
     } else {
       const users = UserModel.getUsers();
       return users.find((u) => u.email === email);
+    }
+  },
+
+  findByVerificationToken: async (token) => {
+    if (isMongo) {
+      return UserModel.findOne({ verificationToken: token }).lean();
+    } else {
+      const users = UserModel.getUsers();
+      return users.find((u) => u.verificationToken === token);
     }
   },
 

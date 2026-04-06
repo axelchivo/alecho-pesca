@@ -157,9 +157,10 @@ async function loadProducts(containerId, filters = {}, page = 1) {
     const displayPrice =
       userType === 'mayorista' && typeof p.wholesalePrice === 'number' ? p.wholesalePrice : p.price;
 
+    const imageUrl = p.image || (p.images && p.images[0]) || 'images/logo.png';
     card.innerHTML = `
       <div class="card h-100">
-        <img class="card-img-top" src="${p.image}" alt="${p.name}">
+        <img class="card-img-top" src="${imageUrl}" alt="${p.name}">
         <div class="card-body">
           <h5 class="card-title"><a href="product.html?id=${p.id}" class="text-decoration-none text-dark">${p.name}</a></h5>
           <p class="card-text">$${displayPrice.toFixed(2)}${userType === 'mayorista' && typeof p.wholesalePrice === 'number' ? ' <small class="text-muted">(mayorista)</small>' : ''}</p>
@@ -373,14 +374,15 @@ async function handleRegister(e) {
   const resp = await res.json();
 
   if (resp.success) {
-    showMessage('Registro exitoso');
-
-    await loadCurrentUser();
-
-    window.location.href = '/account.html';
-  } else {
-    showMessage(resp.error, 'danger');
+    showMessage(
+      resp.message || 'Registro exitoso. Revisa tu correo para verificar tu cuenta.',
+      'success'
+    );
+    form.reset();
+    return;
   }
+
+  showMessage(resp.error, 'danger');
 }
 
 async function handleLogin(e) {
@@ -401,26 +403,23 @@ async function handleLogin(e) {
   const resp = await res.json();
 
   if (resp.success) {
-    // 🔥 Guardar inmediatamente en localStorage
     localStorage.setItem('userType', resp.user.type);
     localStorage.setItem('isAdmin', resp.user.isAdmin ? 'true' : 'false');
-    
-    showMessage('Login correcto');
 
-    // 🔥 CLAVE: recargar usuario desde backend (con sesión)
+    showMessage('Login correcto');
     await loadCurrentUser();
 
     const isAdmin = resp.user.isAdmin || localStorage.getItem('isAdmin') === 'true' || data.email === 'admin@alechopesca.com';
     if (isAdmin) {
-      // 🔥 Pasar parámetro de autenticación en la URL
       window.location.href = '/admin.html?authenticated=true&timestamp=' + Date.now();
     } else {
       window.location.href = '/account.html';
     }
 
-  } else {
-    showMessage(resp.error, 'danger');
+    return;
   }
+
+  showMessage(resp.error, 'danger');
 }
 
 async function handleLogout() {
@@ -511,6 +510,14 @@ window.updateQuantity = updateQuantity;
 
 // Intentar cargar el usuario actual para ajustar la UI (login/logout)
 document.addEventListener('DOMContentLoaded', () => {
+  const query = new URLSearchParams(window.location.search);
+  if (query.get('verified') === 'true') {
+    showMessage('¡Email verificado! Ya puedes iniciar sesión.', 'success');
+  }
+  if (query.get('verify') === 'sent') {
+    showMessage('Revisa tu correo para verificar tu cuenta.', 'info');
+  }
+
   loadCurrentUser();
   // Cargar opiniones solo en páginas que tienen el contenedor de reseñas
   if (document.getElementById('review-content')) {

@@ -1,8 +1,10 @@
 ﻿// controllers/authController.js
 // Maneja registro, login y sesiones de usuario
 
+const crypto = require('crypto');
 const userModel = require('../models/userModel');
 const { sanitizeString } = require('../utils/sanitize');
+const emailService = require('../services/emailService');
 
 exports.register = async (req, res) => {
   const { name, email, password, type, isAdmin } = req.body;
@@ -13,20 +15,29 @@ exports.register = async (req, res) => {
   }
 
   // Solo un administrador puede crear otro administrador
-  const currentUser = await userModel.findById(req.session.userId);  // Verifica si el creador es admin
+  const currentUser = await userModel.findById(req.session.userId);
   if (currentUser && currentUser.isAdmin === false && isAdmin) {
     return res.status(403).json({ error: 'No tienes permiso para crear un administrador' });
   }
 
+  const verificationToken = crypto.randomBytes(24).toString('hex');
   const user = await userModel.create({
     name: sanitizeString(name),
     email: cleanEmail,
     password,
     type: sanitizeString(type),
-    isAdmin,  // Permite que el nuevo usuario tenga isAdmin según el valor enviado
+    isAdmin: Boolean(isAdmin),
+    isVerified: false,
+    verificationToken,
   });
-  req.session.userId = user.id;
-  res.json({ success: true, user });
+
+  await emailService.sendVerificationEmail(cleanEmail, verificationToken);
+
+  res.json({
+    success: true,
+    message:
+      'Registro completado. Revisa tu correo y haz clic en el enlace de verificación para ingresar.',
+  });
 };
 
 exports.login = async (req, res) => {
@@ -37,6 +48,12 @@ exports.login = async (req, res) => {
     return res.status(401).json({ error: 'Credenciales inválidas' });
   }
 
+  if (!user.isAdmin && user.isVerified !== true) {
+    return res
+      .status(403)
+      .json({ error: 'Debes verificar tu correo antes de iniciar sesión.' });
+  }
+
   // Si estaba en texto plano, se actualiza a hash
   if (user.password && !user.password.startsWith('$2')) {
     await userModel.update(user.id, { password });
@@ -44,13 +61,27 @@ exports.login = async (req, res) => {
 
   req.session.userId = user.id;
 
-  // 🔥 Si es admin, enviar URL con parámetro de autenticación
   if (user.isAdmin === true) {
     const redirectUrl = `https://alecho-pesca.onrender.com/admin.html?authenticated=true&t=${Date.now()}`;
     res.json({ success: true, user, redirectUrl });
   } else {
     res.json({ success: true, user });
   }
+};
+
+exports.verifyEmail = async (req, res) => {
+  const { token } = req.query;
+  if (!token) {
+    return res.status(400).json({ error: 'Token de verificación requerido' });
+  }
+
+  const user = await userModel.findByVerificationToken(token);
+  if (!user) {
+    return res.status(400).json({ error: 'Token inválido o expirado' });
+  }
+
+  await userModel.update(user.id, { isVerified: true, verificationToken: null });
+  res.redirect('/account.html?verified=true');
 };
 
 exports.logout = (req, res) => {
