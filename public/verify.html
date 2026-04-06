@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verificación de email | Alecho Pesca</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+              <h4 class="mb-0"><i class="fas fa-envelope-open-text"></i> Verificación de Email</h4>
+            </div>
+            <div class="card-body">
+              <div id="verify-result" class="text-center py-4">
+                <p>Cargando resultado de la verificación...</p>
+              </div>
+              <div class="text-center">
+                <a id="verify-home" href="/account.html" class="btn btn-primary me-2">Ir a mi cuenta</a>
+                <a id="verify-login" href="/account.html" class="btn btn-outline-secondary">Iniciar sesión</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const resultEl = document.getElementById('verify-result');
+      const loginLink = document.getElementById('verify-login');
+
+      if (status === 'success') {
+        resultEl.innerHTML = `
+          <h5 class="text-success">¡Correo verificado con éxito!</h5>
+          <p>Tu cuenta ya está activa. Ahora puedes iniciar sesión.</p>
+        `;
+        loginLink.href = '/account.html';
+      } else {
+        resultEl.innerHTML = `
+          <h5 class="text-danger">Token inválido o expirado</h5>
+          <p>Intenta registrarte nuevamente o solicita un nuevo enlace de verificación.</p>
+        `;
+        loginLink.href = '/account.html';
+      }
+    </script>
+  </body>
+</html>

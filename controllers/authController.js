@@ -72,16 +72,16 @@ exports.login = async (req, res) => {
 exports.verifyEmail = async (req, res) => {
   const { token } = req.query;
   if (!token) {
-    return res.status(400).json({ error: 'Token de verificación requerido' });
+    return res.redirect('/verify.html?status=invalid');
   }
 
   const user = await userModel.findByVerificationToken(token);
   if (!user) {
-    return res.status(400).json({ error: 'Token inválido o expirado' });
+    return res.redirect('/verify.html?status=invalid');
   }
 
   await userModel.update(user.id, { isVerified: true, verificationToken: null });
-  res.redirect('/account.html?verified=true');
+  res.redirect('/verify.html?status=success');
 };
 
 exports.logout = (req, res) => {
